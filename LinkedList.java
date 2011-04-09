@@ -6,14 +6,18 @@ import java.util.NoSuchElementException;
 public class LinkedList implements Iterable{
 	private Link head;
 	private Link tail;
-	
+	private final String HEAD_STRING="I am the head";
+	private final String TAIL_STRING="I am the tail";
 	/**
 	 * Instantiates a new linked list.
 	 * 
 	 * @author <b>students</b>
 	 */
 	public LinkedList() {
-		
+            head = new Link(HEAD_STRING,null,null);
+            tail = new Link(TAIL_STRING,null,null);
+            head.setNext(tail);
+            tail.setPrev(head);
 	}
 	
 	/**
@@ -23,7 +27,11 @@ public class LinkedList implements Iterable{
 	 * @param data the data
 	 */
 	public void addFirst(Object data){
-	
+	    Link newLink = new Link(data, null, null);
+            Link oldNext = head.getNext();
+            head.setNext(newLink);
+            newLink.setPrev(head);
+            newLink.setNext(oldNext);
 	}
 	
 	/**
@@ -33,9 +41,14 @@ public class LinkedList implements Iterable{
 	 */
 	public void removeFirst(){
 		if (isEmpty())
+                {
 			throw new NoSuchElementException();
-		
-		
+                }
+               
+                Link newNext = head.getNext().getNext();
+                head.setNext(newNext);
+                newNext.setPrev(head);
+                	
 	}
 	
 	/**
@@ -45,7 +58,11 @@ public class LinkedList implements Iterable{
 	 * @param data the data
 	 */
 	public void addLast(Object data){
-		
+	    Link newLink = new Link(data, null, null);
+            Link oldPrev = tail.getPrev();
+            tail.setPrev(newLink);
+            newLink.setNext(tail);
+            newLink.setNext(oldPrev);
 	}
 	
 	/**
@@ -55,8 +72,13 @@ public class LinkedList implements Iterable{
 	 */
 	public void removeLast(){
 		if (isEmpty())
+                {
 			throw new NoSuchElementException();
-		
+                }
+               
+                Link newNext = tail.getPrev().getPrev();
+                tail.setPrev(newNext);
+                newNext.setNext(tail);
 		
 	}
 	
@@ -103,7 +125,7 @@ public class LinkedList implements Iterable{
 	 * @return true, if is empty
 	 */
 	public boolean isEmpty(){
-		return false;
+		return head.getNext().getData()==TAIL_STRING;
 	}
 
 	/* (non-Javadoc)
