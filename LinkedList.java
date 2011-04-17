@@ -89,7 +89,25 @@ public class LinkedList implements Iterable{
 	 * @param data the data
 	 */
 	public void remove(Object data){
-		
+		if (isEmpty())
+			throw new NoSuchElementException();
+
+                /*Find element*/
+                boolean found = false;
+                Link curr = head;
+                while (curr.getNext().getData()==TAIL_STRING && !found)
+                {
+                    /* found the data, removing */
+                    if (curr.getData().equals(data))
+                    {
+                        Link temp = curr.getPrev();
+                        curr.getNext().setPrev(curr.getPrev());
+                        temp.setNext(curr.getNext());
+
+                        found = true;
+                    }
+                    else curr = curr.getNext();
+                }
 	}
 	
 	/**
@@ -99,10 +117,9 @@ public class LinkedList implements Iterable{
 	 * @return the first element data
 	 */
 	public Object getFirst(){
-		if (isEmpty())
-			throw new NoSuchElementException();
+		if (isEmpty()) return null;
 		
-		return null;
+		return head.getData();
 	}
 	
 	/**
@@ -112,10 +129,9 @@ public class LinkedList implements Iterable{
 	 * @return the last element data
 	 */
 	public Object getLast(){
-		if (isEmpty())
-			throw new NoSuchElementException();
+		if (isEmpty()) return null;
 		
-		return null;
+		return tail.getData();
 	}
 	
 	/**
