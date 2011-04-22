@@ -1,14 +1,17 @@
+import java.util.Iterator;
 
 /**
  * The Class representing the KiPod media player.
  */
-public class KiPod{	
+public class KiPod{
+
+        private AVLTree playTree;
+        private AVLTree songTree;
 
 	/**
 	 * Instantiates a new kiPod.
 	 */
 	public KiPod(){
-		
 	}
 
 	/**
@@ -17,7 +20,7 @@ public class KiPod{
 	 * @param song the song
 	 */
 	public void addSong(Song song){
-		
+		songTree.add(song.getTitle(), song);
 	}
 	
 	/**
@@ -26,7 +29,7 @@ public class KiPod{
 	 * @param playlist the playlist
 	 */
 	public void addPlaylist(Playlist playlist){
-		
+		playTree.add(playlist.getName(), playlist);
 	}
 	
 	/**
@@ -36,7 +39,8 @@ public class KiPod{
 	 * @param playlist the playlist
 	 */
 	public void addSongToPlaylist(Song song, Playlist playlist){
-		
+		song.add(playlist);
+                playlist.add(song);
 	}
 
 	/**
@@ -45,7 +49,19 @@ public class KiPod{
 	 * @param playlist the playlist
 	 */
 	public void removePlaylist(Playlist playlist){
-		
+		/* Find all the songs it features in,
+                 remove from them*/
+
+                 LinkedList songlist = playlist.getKthtillHthSongs
+                         (1, playlist.size());
+
+                 Iterator it = songlist.iterator();
+                 while (it.hasNext()){
+                     removeSongFromPlaylist((Song)(it.next()), playlist);
+                 }
+
+                /* Remove from data structure*/
+                 playTree.remove(playlist.getName());		
 	}
 
 	/**
@@ -55,7 +71,8 @@ public class KiPod{
 	 * @param playlist the playlist
 	 */
 	public void removeSongFromPlaylist(Song song, Playlist playlist){
-		
+		song.remove(playlist);
+                playlist.remove(song);
 	}
 
 	/**
@@ -64,7 +81,15 @@ public class KiPod{
 	 * @param song the song
 	 */
 	public void removeSong(Song song){
-		
+		/* Find all the playlists it features in,
+                 remove from them*/
+                 Iterator it = song.getPlaylists().iterator();
+                 while (it.hasNext()){
+                     removeSongFromPlaylist(song, (Playlist)(it.next()));
+                 }
+
+                /* Remove from data structure*/
+                 songTree.remove(song.getTitle());
 	}
 	
 	/**
@@ -75,7 +100,7 @@ public class KiPod{
 	 * @return the song
 	 */
 	public Song findKthSongInPlaylist(Playlist playlist,int k){
-		return null;
+		return playlist.findKthSong(k);
 	}
 
 	/**
@@ -87,7 +112,7 @@ public class KiPod{
 	 * @return the kth till hth song in playlist
 	 */
 	public LinkedList getKthTillHthSongInPlaylist(Playlist playlist,int k,int h){
-		return null;
+		return playlist.getKthtillHthSongs(k, h);
 	}
 	
 	/**
@@ -97,7 +122,7 @@ public class KiPod{
 	 * @return the song
 	 */
 	public Song findSong(String name){
-		return null;
+		return (Song)(songTree.find(name));
 	}
 	
 	/**
@@ -107,7 +132,7 @@ public class KiPod{
 	 * @return the playlist
 	 */
 	public Playlist findPlaylist(String name){
-		return null;
+		return (Playlist)(playTree.find(name));
 	}
 	
 	/**
@@ -116,7 +141,7 @@ public class KiPod{
 	 * @return the int
 	 */
 	public int numOfSongs(){
-		return -1;
+		return songTree.size();
 	}
 	
 	/**
@@ -125,6 +150,6 @@ public class KiPod{
 	 * @return the int
 	 */
 	public int numOfPlaylists(){
-		return -1;
+		return playTree.size();
 	}
 }

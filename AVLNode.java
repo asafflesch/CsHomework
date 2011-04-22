@@ -89,7 +89,21 @@ public class AVLNode {
 	 * @author <b>students</b>
 	 */
 	public LinkedList getKthTillHth(int k, int h) {
-		return null;
+
+            LinkedList ret = new LinkedList();
+
+            // Get Kth element
+            AVLNode curr = findKthNode(k);
+
+            // Adding elements to array
+            for (int i = k; i < h && curr != null; ++i)
+            {
+                ret.addLast(curr.data);
+                curr = curr.succ;
+            }
+
+
+            return ret;
 	}
 	
 
@@ -112,9 +126,54 @@ public class AVLNode {
 	 * @author <b>students</b>
 	 */
 	public Object findKthElement(int k){
-		
-		return null;
+
+            AVLNode elem = findKthNode(k);
+
+            Object ret = null;
+            if (elem != null)
+                ret = elem.data;
+
+            return ret;
 	}
+
+        private AVLNode findKthNode(int k){
+
+            AVLNode ret = null;
+
+
+            // Checking the left subtree
+            if (left == null)
+            {
+                // If there are no elements to the left, this is the
+                // first element in this tree
+                if (k == 1)
+                {
+                    ret = this;
+                }
+                else
+                {
+                    if (right != null)
+                        ret = right.findKthNode(k - 1);
+                }
+            }
+            else
+            {
+                if (left.size() >= k) {
+                    ret = left.findKthNode(k);
+                }
+                else if (left.size() == k - 1)
+                {
+                    ret = this;
+                }
+                else if (left.size() < k - 1)
+                {
+                    if (right != null)
+                        ret = right.findKthNode(k - (left.size() + 1));
+                }
+            }
+
+            return ret;
+        }
 	
 	/**
 	 * Return the size of the tree.
