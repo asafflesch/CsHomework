@@ -65,8 +65,27 @@ public class AVLNode {
 	 * @author <b>students</b>
 	 */
 	public AVLNode add(Object key,Object data) {
-
-		return null;
+		int compResult = comp.compare(key, this.key);
+                AVLNode nodeToUse = null;
+                if (compResult <= 0)
+		{
+			nodeToUse = left;	
+		}
+		else
+		{
+			nodeToUse = right;
+		}
+		// If the tree is empty
+		if (nodeToUse == null)
+		{
+			nodeToUse = new AVLNode(key, data, this.comp, this);	
+		}
+		else
+		{
+			nodeToUse.add(key, data);
+		}
+		
+		
 	}
 
 	/**

@@ -9,12 +9,10 @@ public class ListIterator implements Iterator{
 		curr = first;
 	}
 
-	@Override
 	public boolean hasNext() {
 		return curr!=null;
 	}
 
-	@Override
 	public Object next() {
 		if (!hasNext()){
 			throw new NoSuchElementException();
@@ -25,7 +23,6 @@ public class ListIterator implements Iterator{
 		return ans;
 	}
 
-	@Override
 	public void remove() {
 		throw new UnsupportedOperationException();
 	}
