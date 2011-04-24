@@ -65,8 +65,322 @@ public class AVLNode {
 	 * @author <b>students</b>
 	 */
 	public AVLNode add(Object key,Object data) {
+		int compResult = comp.compare(key, this.key);
+		boolean newLevelAdded = false;
+                AVLNode nodeToUse = null;
+                if (compResult <= 0)
+		{
+			nodeToUse = left;	
+		}
+		else
+		{
+			nodeToUse = right;
+		}
+		// If the tree is empty
+		if (nodeToUse == null)
+		{
+			nodeToUse = new AVLNode(key, data, this.comp, this);	
+			// Put the new subtree back in the node
+	                if (compResult <= 0)
+			{
+				left = nodeToUse;
+			}
+			else
+			{
+				right = nodeToUse;
+			}
+			// If left and right are null, then we're adding a new 'level' to the tree and need to update the height of everything in the tree
+			if ((left == null) && (right == null))
+			{
+				newLevelAdded = true;
+			}
+		}
+		else
+		{
+			nodeToUse.add(key, data);
+		}
 
-		return null;
+
+
+		if (newLevelAdded)
+		{
+			height = 1;
+			boolean needToChange = true;
+			AVLNode currParent = parent;
+			// Run until we either hit the root or the change stops reverbating - i.e, the added node doesn't change the height of the level
+			while ((currParent != null) && (needToChange))
+			{
+				int maxHeight = currParent.getMaxHeight() + 1;
+				if (maxHeight > currParent.height)
+				{
+					currParent.height = maxHeight;
+					currParent = currParent.parent;
+				}	
+				else
+				{
+					needToChange = false;
+				}
+			}
+		}
+
+		// Adjusting the size - we added a node, so it goes up by 1.
+		size = size + 1;
+
+		// Now we check if the new tree is still balanced
+		int balance = balanceFactor();
+
+		// Four cases for balancing
+		if (balance == -2)
+		{
+			int rightBalance = right.balanceFactor();
+			if (rightBalance <= 0)
+			{
+				// RRC - one left rotation needed
+
+				// left rotation 
+
+				if (parent != null)
+				{
+					if (isRightChild())
+					{
+						parent.right = right;
+					}
+					else
+					{
+						parent.left = right;
+					}
+				}
+				AVLNode tempNode = right.left;
+				right.parent = parent;
+
+				parent = right;
+				right.left = this;
+
+				if (tempNode != null)
+				{
+					tempNode.parent = this;
+				}
+				right = tempNode;
+			}
+			else
+			{
+				// RLC - first rotate the subtree to the right, then rotate to the left
+
+				// right rotation of subtree
+
+				// The added node causing the imbalance
+				AVLNode unBalancingNode = right.left;
+
+				// Making the current right node point to it's new left - the 
+				// right node of the unbalancing node
+				right.left = unBalancingNode.right;
+				if (unBalancingNode.right != null)
+				{
+					unBalancingNode.right.parent = right;
+				}
+
+				// That done, the unbalancing node can designate the current right node as it's new 
+				// right
+				unBalancingNode.right = right;
+				// Move the right node one level down
+				right.parent = unBalancingNode;
+
+				// Attach the unbalancingNode to the right
+				right = unBalancingNode;
+				unBalancingNode.parent = this;
+
+				// Adjust for the new height
+				right.adjustHeight();
+				right.adjustSize();
+				if (right.right != null)
+				{
+					right.right.adjustHeight();
+					right.right.adjustSize();
+				}
+
+				// left rotation
+				
+				if (parent != null)
+				{
+					if (isRightChild())
+					{
+						parent.right = right;
+					}
+					else
+					{
+						parent.left = right;
+					}
+				}
+				AVLNode tempNode = right.left;
+
+				right.parent = parent;
+				parent = right;
+
+				right.left= this;
+				if (tempNode != null)
+				{
+					tempNode.parent = this;
+				}
+				right = tempNode;
+			}
+		}
+		else if (balance == 2)
+		{
+			int leftBalance = left.balanceFactor();
+			if (leftBalance <= 0)
+			{
+				// LRC - first rotate the subtree to the left then rotate right
+
+				// left rotation of subtree
+
+				// The node causing the imbalance
+				AVLNode unBalancingNode = left.right;
+
+				// Changing the current left node to point at it's new right - 
+				// the left of the unbalancing node
+				left.right = unBalancingNode.left;
+				if (unBalancingNode.left != null)
+				{
+					unBalancingNode.left.parent = left.right;
+				}
+
+				// That done, the unbalancing node can designate it's new left - 
+				// the current left node
+				unBalancingNode.left = left;
+				// Moving the left node one level down
+				left.parent = unBalancingNode;
+
+				// Attach the unbalancing node to the left
+				left = unBalancingNode;
+				unBalancingNode.parent = this;
+
+				left.adjustHeight();
+				left.adjustSize();
+				if (left.left != null)
+				{
+					left.left.adjustHeight();
+					left.left.adjustSize();
+				}
+
+				// right rotation
+				
+				if (parent != null)
+				{
+					if (isRightChild())
+					{
+						parent.right = left;
+					}
+					else
+					{
+						parent.left = left;
+					}
+				}
+				AVLNode tempNode = left.right;
+				left.parent = parent;
+				parent = left;
+				left.right = this;
+				if (tempNode != null)
+				{
+					tempNode.parent = this;
+				}
+				left = tempNode;
+				
+			}
+			else
+			{
+				// LLC - one right rotation needed
+				
+				// right rotation
+				
+				if (parent != null)
+				{
+					if (isRightChild())
+					{
+						parent.right = left;
+					}
+					else
+					{
+						parent.left = left;
+					}
+				}
+				AVLNode tempNode = left.right;
+
+				left.parent = parent;
+				parent = left;
+
+				left.right = this;
+
+				if (tempNode != null)
+				{
+					tempNode.parent = this; 	
+				}
+				left = tempNode;
+			}
+		}
+		// Any changes require a re-balancing of the height and size of the subtree - which, at most, changed the level and size of two nodes
+		adjustSize();
+		adjustHeight();
+		if (parent != null)
+		{
+			parent.adjustSize();
+			parent.adjustHeight();
+		}
+
+		// Getting the tree root to return
+		AVLNode currParent = parent;
+		AVLNode root = this;
+		while (currParent != null)
+		{
+			root = currParent;
+			currParent = currParent.parent;
+		}
+
+		return root;
+	}
+	private int balanceFactor()
+	{
+		int leftFactor = -1;	
+		int rightFactor = -1;
+		if (left != null)
+			leftFactor = left.height;
+		if (right != null)
+			rightFactor = right.height;
+		return leftFactor - rightFactor;
+	}
+
+	private int getMaxHeight()
+	{
+		int leftHeight = (left != null) ? left.height : 0;
+		int rightHeight = (right != null) ? right.height : 0;
+		return Math.max(leftHeight, rightHeight);
+	}
+	private void adjustSize()
+	{
+		int leftSize = (left != null) ? left.size : 0;
+		int rightSize = (right != null) ? right.size : 0;
+		size = leftSize + rightSize + 1;
+	}
+	private void adjustHeight()
+	{
+		height = getMaxHeight();
+		// Adding the level this node gets for having ANY children at all
+		if ((left != null) || (right != null))
+		{
+			height = height + 1;
+		}
+	}
+
+	private boolean isRightChild()
+	{
+		boolean isRight = false;
+		if (parent.right != null)
+		{
+			if (comp.compare(key, parent.right.getKey()) == 0)
+			{
+				isRight = true;
+			}
+		}
+		return isRight;
 	}
 
 	/**
@@ -201,6 +515,15 @@ public class AVLNode {
 	 */
 	public Object getKey() {
 		return this.key;
+	}
+
+	/**
+	 * Gets the data of the current node.
+	 *
+	 * @return the data
+	 */
+	public Object getData() {
+		return this.data;
 	}
 
 	/* (non-Javadoc)
