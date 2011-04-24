@@ -62,7 +62,7 @@ public class AVLNode {
 	 * @param key the key
 	 * @param data the data
 	 * @return the root of the tree after insertion and rotations
-	 * @author <b>students</b>
+	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
 	 */
 	public AVLNode add(Object key,Object data) {
 		int compResult = comp.compare(key, this.key);
@@ -388,7 +388,7 @@ public class AVLNode {
 	 *
 	 * @param key the key
 	 * @return the root after deletion and rotations
-	 * @author <b>students</b>
+	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
 	 */
 	public AVLNode remove(Object key) {
 		return null;	
@@ -400,7 +400,7 @@ public class AVLNode {
 	 * @param k A number between 1 and @link {@link #size()}
 	 * @param h A number between k and @link {@link #size()}
 	 * @return elements between k and h
-	 * @author <b>students</b>
+	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
 	 */
 	public LinkedList getKthTillHth(int k, int h) {
 
@@ -426,7 +426,7 @@ public class AVLNode {
 	 *
 	 * @param key the key of the node
 	 * @return the data of the found Node, returns null if node isn't found
-	 * @author <b>students</b>
+	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
 	 */
 	public Object find(Object key) {
 		return null;
@@ -437,7 +437,7 @@ public class AVLNode {
 	 *
 	 * @param k is a number between 1 and {@link #size()}
 	 * @return the object
-	 * @author <b>students</b>
+	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
 	 */
 	public Object findKthElement(int k){
 

@@ -9,7 +9,7 @@ public class LinkedList implements Iterable{
 	/**
 	 * Instantiates a new linked list.
 	 * 
-	 * @author <b>students</b>
+	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
 	 */
 	public LinkedList() {
 	}
@@ -17,7 +17,7 @@ public class LinkedList implements Iterable{
 	/**
 	 * Adds the given data as the first element in the list.
 	 *
-	 * @author <b>students</b>
+	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
 	 * @param data the data
 	 */
 	public void addFirst(Object data){
@@ -56,7 +56,7 @@ public class LinkedList implements Iterable{
 	/**
 	 * Removes the first element in the list.
 	 *  
-	 * @author <b>students</b>
+	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
 	 */
 	public void removeFirst(){
 		if (isEmpty())
@@ -78,7 +78,7 @@ public class LinkedList implements Iterable{
 	/**
 	 * Adds the given data as the last element in the list.
 	 *
-	 * @author <b>students</b>
+	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
 	 * @param data the data
 	 */
 	public void addLast(Object data){
@@ -116,7 +116,7 @@ public class LinkedList implements Iterable{
 	/**
 	 * Removes the last element in the list.
 	 * 
-	 *  @author <b>students</b>
+	 *  @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
 	 */
 	public void removeLast(){
 		if (isEmpty())
@@ -139,7 +139,7 @@ public class LinkedList implements Iterable{
 	/**
 	 * Removes the first occurrence of data in the list (if exist). this method is using {@link Object#equals(Object)}.
 	 *
-	 * @author <b>students</b>
+	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
 	 * @param data the data
 	 */
 	public void remove(Object data){
@@ -177,7 +177,7 @@ public class LinkedList implements Iterable{
 	/**
 	 * Gets the first element data field.
 	 *
-	 * @author <b>students</b>
+	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
 	 * @return the first element data
 	 */
 	public Object getFirst(){
@@ -189,7 +189,7 @@ public class LinkedList implements Iterable{
 	/**
 	 * Gets the last element data field.
 	 *
-	 * @author <b>students</b>
+	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
 	 * @return the last element data
 	 */
 	public Object getLast(){
@@ -201,7 +201,7 @@ public class LinkedList implements Iterable{
 	/**
 	 * Checks if the list is empty.
 	 *
-	 * @author <b>students</b>
+	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
 	 * @return true, if is empty
 	 */
 	public boolean isEmpty(){
