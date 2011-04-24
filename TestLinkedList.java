@@ -63,7 +63,7 @@ public class TestLinkedList {
 		for (int i=0;i<num;i=i+2){
 			list.remove(i);
 		}
-
+		System.out.println(list.toString());
 		//list should be only numbers between 1 to 19 (no even numbers)
 		while (!list.isEmpty()){
 			Integer data = (Integer)list.getFirst();
