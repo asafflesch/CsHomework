@@ -8,7 +8,7 @@ public class Playlist {
 	
 	public Playlist(String name){
 		this.name = name;
-		innerList = new AVLTree();
+		this.innerList = new AVLTree(new IntegerComparator());
 	}
 	
 	public String getName(){
@@ -27,7 +27,8 @@ public class Playlist {
 	
 	public Song find(int length) {
 		int key = length;
-		return innerList.find(key);
+		Song foundSong = (Song) innerList.find(key);
+		return foundSong;
 	}
 	
 	public Song findKthSong(int k) {
