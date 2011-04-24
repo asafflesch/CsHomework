@@ -184,7 +184,7 @@ public class TestAVLTree {
 				tree.add(key, key);
 			}
 			if (tree.size() != size){
-				System.err.println("Wrong size of tree !");
+				System.err.println("Wrong size of tree - actual size: " +  tree.size() + "!");
 			}
 		}catch (Exception e) {
 			System.err.println("Problem running testSize("+size+")");

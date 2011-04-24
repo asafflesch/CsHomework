@@ -44,11 +44,10 @@ public class LinkedList implements Iterable{
                 {
 			throw new NoSuchElementException();
                 }
-               
+               // Guaranteed to exist, otherwise the list would be empty
                 Link newNext = head.getNext().getNext();
                 head.setNext(newNext);
-                newNext.setPrev(head);
-                	
+	        newNext.setPrev(head);
 	}
 	
 	/**
@@ -76,6 +75,7 @@ public class LinkedList implements Iterable{
 			throw new NoSuchElementException();
                 }
                
+               // Guaranteed to exist, otherwise the list would be empty
                 Link newNext = tail.getPrev().getPrev();
                 tail.setPrev(newNext);
                 newNext.setNext(tail);
@@ -94,8 +94,10 @@ public class LinkedList implements Iterable{
 
                 /*Find element*/
                 boolean found = false;
-                Link curr = head;
-                while (curr.getNext().getData()==TAIL_STRING && !found)
+		/* The list is always guaranteed to have the dummy nodes of 
+                head and tail. */
+                Link curr = head.getNext();
+                while (curr.getData()!=TAIL_STRING && !found)
                 {
                     /* found the data, removing */
                     if (curr.getData().equals(data))
