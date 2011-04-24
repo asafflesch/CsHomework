@@ -384,7 +384,33 @@ public class AVLNode {
 	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
 	 */
 	public Object find(Object key) {
-		return null;
+		int result = comp.compare(key, this.key);
+		if (result ==0)
+		{
+			return this;
+		}
+		else if (result < 0)
+		{
+			if (left != null)
+			{
+				return left.find(key);
+			}
+			else
+			{
+				return null;
+			}
+		}
+		else
+		{
+			if (right != null)
+			{
+				return right.find(key);
+			}
+			else
+			{
+				return null;
+			}
+		}
 	}
 
 	/**
