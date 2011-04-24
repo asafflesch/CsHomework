@@ -320,7 +320,33 @@ public class AVLNode {
 	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
 	 */
 	public AVLNode remove(Object key) {
-		return null;	
+                AVLNode ret = null;
+
+                switch (comp.compare(key, this.key))
+                {
+                    case 0:
+                        // Removing this item
+                        if (left == null && right == null)
+                        {
+                            if (isRightChild())
+                                parent.right = null;
+                            else
+                                parent.left = null;
+                        }
+
+                        break;
+                    case 1:
+                        if (left != null)
+                            ret = left.remove(key);
+                        break;
+                    case -1:
+                        if (right != null)
+                            ret = right.remove(key);
+                        break;
+                }
+
+
+		return ret;
 	}
 
 	/**
