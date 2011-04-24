@@ -137,18 +137,6 @@ public class AVLNode {
 
 				// left rotation 
 
-				if (parent != null)
-				{
-					if (isRightChild())
-					{
-						parent.right = right;
-					}
-					else
-					{
-						parent.left = right;
-					}
-				}
-
 				rotateLeft(this);
 			}
 			else
@@ -157,8 +145,8 @@ public class AVLNode {
 
 				// right rotation of subtree
 				rotateRight(right);
-				adjustHeight();
-				adjustSize();
+				right.adjustHeight();
+				right.adjustSize();
 				if (right.right != null)
 				{
 					right.right.adjustSize();
@@ -166,17 +154,6 @@ public class AVLNode {
 				}
 				// left rotation
 				
-				if (parent != null)
-				{
-					if (isRightChild())
-					{
-						parent.right = right;
-					}
-					else
-					{
-						parent.left = right;
-					}
-				}
 				rotateLeft(this);
 			}
 		}
@@ -200,17 +177,6 @@ public class AVLNode {
 
 				// right rotation
 				
-				if (parent != null)
-				{
-					if (isRightChild())
-					{
-						parent.right = left;
-					}
-					else
-					{
-						parent.left = left;
-					}
-				}
 				rotateRight(this);
 			}
 			else
@@ -219,17 +185,6 @@ public class AVLNode {
 				
 				// right rotation
 				
-				if (parent != null)
-				{
-					if (isRightChild())
-					{
-						parent.right = left;
-					}
-					else
-					{
-						parent.left = left;
-					}
-				}
 				rotateRight(this);
 			}
 		}
@@ -266,6 +221,35 @@ public class AVLNode {
 
 	private void rotateRight(AVLNode root)
 	{
+		if (root.left != null)
+		{
+			AVLNode newRoot = root.left;
+			AVLNode dataToTransfer = newRoot.right;
+			root.left = dataToTransfer;
+			if (dataToTransfer != null)
+			{
+				dataToTransfer.parent = root;
+			}
+			
+			newRoot.right = root;
+			newRoot.parent = root.parent;
+			if (root.parent != null)
+			{
+				if (root.isRightChild())
+				{
+					root.parent.right = newRoot;
+				}
+				else
+				{
+					root.parent.left = newRoot;
+				}
+			}
+			root.parent = newRoot;
+		}
+	}
+
+	private void rotateLeft(AVLNode root)
+	{
 		if (root.right != null)
 		{
 			AVLNode newRoot = root.right;
@@ -275,26 +259,20 @@ public class AVLNode {
 			{
 				dataToTransfer.parent = root;
 			}
-			
+
 			newRoot.left = root;
-			root.parent = newRoot;
-		}
-	}
-
-	private void rotateLeft(AVLNode root)
-	{
-		if (root.left != null)
-		{
-			AVLNode newRoot = root.left;
-			AVLNode dataToTransfer = newRoot.right;
-
-			root.left = dataToTransfer;
-			if (dataToTransfer != null)
+			newRoot.parent = root.parent;
+			if (root.parent != null)
 			{
-				dataToTransfer.parent = root;
+				if (root.isRightChild())
+				{
+					root.parent.right = newRoot;
+				}
+				else
+				{
+					root.parent.left = newRoot;
+				}
 			}
-
-			newRoot.right = root;
 			root.parent = newRoot;
 		}
 	}
