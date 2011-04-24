@@ -2,11 +2,13 @@
 
 public class Playlist {
 	private String name;
-	
+	// This data structure has the required performance criteria
+	// and works here because we can be assured of unique keys
+	private AVLTree innerList;
 	
 	public Playlist(String name){
 		this.name = name;
-	
+		innerList = new AVLTree();
 	}
 	
 	public String getName(){
@@ -14,26 +16,30 @@ public class Playlist {
 	}
 	
 	public void add(Song song) {
-	
+		int key = song.getLength();
+		innerList.add(key, song);
 	}
 
 	public void remove(Song song) {
-	
+		int key = song.getLength();
+		innerList.remove(key);
 	}
 	
 	public Song find(int length) {
-		return null;
+		int key = length;
+		return innerList.find(key);
 	}
 	
 	public Song findKthSong(int k) {
-		return null;
+		Song kThSong = (Song) innerList.findKthElement(k);
+		return kThSong;
 	}
 	
 	public LinkedList getKthtillHthSongs(int k,int h) {
-		return null;
+		return innerList.getKthTillHth(k,h);
 	}
 	
 	public int size(){
-		return -1;
+		return innerList.size();
 	}
 }

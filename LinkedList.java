@@ -6,18 +6,12 @@ import java.util.NoSuchElementException;
 public class LinkedList implements Iterable{
 	private Link head;
 	private Link tail;
-	private final String HEAD_STRING="I am the head";
-	private final String TAIL_STRING="I am the tail";
 	/**
 	 * Instantiates a new linked list.
 	 * 
 	 * @author <b>students</b>
 	 */
 	public LinkedList() {
-            head = new Link(HEAD_STRING,null,null);
-            tail = new Link(TAIL_STRING,null,null);
-            head.setNext(tail);
-            tail.setPrev(head);
 	}
 	
 	/**
@@ -27,11 +21,36 @@ public class LinkedList implements Iterable{
 	 * @param data the data
 	 */
 	public void addFirst(Object data){
-	    Link newLink = new Link(data, null, null);
-            Link oldNext = head.getNext();
-            head.setNext(newLink);
-            newLink.setPrev(head);
-            newLink.setNext(oldNext);
+		if (head == null)
+		{
+			if (tail != null)
+			{
+				throw new RuntimeException("Sanity check failed - if head is null, tail should be too");
+			}
+			// Empty list
+			head = new Link(data, null, null);
+			tail = head;
+		}
+		else
+		{
+			if (head.getNext() == null)
+			{
+				// List with only one entry
+				tail = new Link(head.getData(), null, head);
+				head.setNext(tail);
+				head.setData(data);
+			}
+			else
+			{
+				// List with at least two entries
+				Link oldNext = head.getNext();
+				Link newLink = new Link(head.getData(), oldNext, head);
+				head.setNext(newLink);
+				oldNext.setPrev(newLink);
+				head.setData(data);
+			}
+		}
+
 	}
 	
 	/**
@@ -44,10 +63,16 @@ public class LinkedList implements Iterable{
                 {
 			throw new NoSuchElementException();
                 }
-               // Guaranteed to exist, otherwise the list would be empty
-                Link newNext = head.getNext().getNext();
-                head.setNext(newNext);
-	        newNext.setPrev(head);
+		if (head.getNext() != null) 
+		{
+			head = head.getNext();
+			head.setPrev(null);
+		}
+		else
+		{
+			head = null;
+			tail = null;
+		}
 	}
 	
 	/**
@@ -57,11 +82,35 @@ public class LinkedList implements Iterable{
 	 * @param data the data
 	 */
 	public void addLast(Object data){
-	    Link newLink = new Link(data, null, null);
-            Link oldPrev = tail.getPrev();
-            tail.setPrev(newLink);
-            newLink.setNext(tail);
-            newLink.setNext(oldPrev);
+		if (tail == null)
+		{
+			if (head != null)
+			{
+				throw new RuntimeException("Sanity check failed - if tail is null, head should be too");
+			}
+			// Empty list
+			tail = new Link(data, null, null);
+			head = tail;
+		}
+		else
+		{
+			if (tail.getPrev() == null)
+			{
+				// List with only one entry
+				head = new Link(tail.getData(), tail, null);
+				tail.setPrev(head);
+				tail.setData(data);
+			}
+			else
+			{
+				// List with at least two entries
+				Link oldPrev = tail.getPrev();
+				Link newPrev = new Link(tail.getData(), tail, oldPrev);
+				oldPrev.setNext(newPrev);
+				tail.setPrev(newPrev);
+				tail.setData(data);
+			}
+		}
 	}
 	
 	/**
@@ -75,11 +124,16 @@ public class LinkedList implements Iterable{
 			throw new NoSuchElementException();
                 }
                
-               // Guaranteed to exist, otherwise the list would be empty
-                Link newNext = tail.getPrev().getPrev();
-                tail.setPrev(newNext);
-                newNext.setNext(tail);
-		
+		if (tail.getPrev() != null)
+		{
+			tail = tail.getPrev();
+			tail.setNext(null);
+		}
+		else
+		{
+			tail = null;
+			head = null;
+		}
 	}
 	
 	/**
@@ -92,20 +146,28 @@ public class LinkedList implements Iterable{
 		if (isEmpty())
 			throw new NoSuchElementException();
 
-                /*Find element*/
+                // Find element
                 boolean found = false;
-		/* The list is always guaranteed to have the dummy nodes of 
-                head and tail. */
-                Link curr = head.getNext();
-                while (curr.getData()!=TAIL_STRING && !found)
+
+                Link curr = head;
+                while ((curr != null) && !found)
                 {
-                    /* found the data, removing */
+                    // found the data, removing 
                     if (curr.getData().equals(data))
                     {
-                        Link temp = curr.getPrev();
-                        curr.getNext().setPrev(curr.getPrev());
-                        temp.setNext(curr.getNext());
-
+			if (curr.getNext() == null)
+			{
+				removeLast();
+			}
+			else if (curr.getPrev() == null)
+			{
+				removeFirst();
+			}
+			else
+			{
+				Link nextNode = curr.getNext();
+				curr.getPrev().setNext(nextNode);
+			}
                         found = true;
                     }
                     else curr = curr.getNext();
@@ -143,7 +205,12 @@ public class LinkedList implements Iterable{
 	 * @return true, if is empty
 	 */
 	public boolean isEmpty(){
-		return head.getNext().getData()==TAIL_STRING;
+		// A list is empty if the head is null
+		if (((head == null) && (tail != null)) || ((head != null) &&  (tail == null)))
+		{
+			throw new RuntimeException("Sanity check failed - head and tail must be either null or not-null together");
+		}
+		return (head == null);
 	}
 
 	/* (non-Javadoc)
