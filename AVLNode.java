@@ -94,6 +94,23 @@ public class AVLNode {
 			{
 				right = nodeToUse;
 			}
+                        nodeToUse.parent = this;
+
+                        // set pred and succ. this node is necessarily a leaf, since it
+                        // was just added
+                        if (nodeToUse.isRightChild())
+                        {
+                            nodeToUse.pred = this;
+                            nodeToUse.succ = succ;
+                            succ = nodeToUse;
+                        }
+                        else
+                        {
+                            nodeToUse.succ = this;
+                            nodeToUse.pred = pred;
+                            pred = nodeToUse;
+
+                        }
 		}
 		else
 		{
@@ -124,7 +141,12 @@ public class AVLNode {
 		// Adjusting the size - we added a node, so it goes up by 1.
 		size = size + 1;
 
-		// Now we check if the new tree is still balanced
+		return balanceTree();
+	}
+
+        private AVLNode balanceTree()
+        {
+                // Now we check if the new tree is still balanced
 		int balance = balanceFactor();
 
 		// Four cases for balancing
@@ -135,7 +157,7 @@ public class AVLNode {
 			{
 				// RRC - one left rotation needed
 
-				// left rotation 
+				// left rotation
 
 				rotateLeft(this);
 			}
@@ -153,7 +175,7 @@ public class AVLNode {
 					right.right.adjustHeight();
 				}
 				// left rotation
-				
+
 				rotateLeft(this);
 			}
 		}
@@ -176,15 +198,15 @@ public class AVLNode {
 				}
 
 				// right rotation
-				
+
 				rotateRight(this);
 			}
 			else
 			{
 				// LLC - one right rotation needed
-				
+
 				// right rotation
-				
+
 				rotateRight(this);
 			}
 		}
@@ -207,7 +229,8 @@ public class AVLNode {
 		}
 
 		return root;
-	}
+        }
+
 	private int balanceFactor()
 	{
 		int leftFactor = -1;	
@@ -324,8 +347,9 @@ public class AVLNode {
 
                 switch (comp.compare(key, this.key))
                 {
+                    // Removing this item
                     case 0:
-                        // Removing this item
+                        // If item is a leaf
                         if (left == null && right == null)
                         {
                             if (isRightChild())
@@ -333,6 +357,36 @@ public class AVLNode {
                             else
                                 parent.left = null;
                         }
+                        // if it has one child, moving it to the parent
+                        else if (left == null || right == null)
+                        {
+                            AVLNode child = (left == null ? right : left);
+
+                            if (isRightChild())
+                                parent.right = child;
+                            else
+                                parent.left = child;
+
+                        }
+                        // if it has two children, switching places with predecessor.
+                        else
+                        {
+                            // switching pred's son to be parented by pred's parent
+                            if (pred.isRightChild())
+                                pred.parent.right = pred.left;
+                            else
+                                parent.left = pred.left;
+
+                            // giving pred custody of this node's children
+                            pred.right = right;
+                            pred.left = left;
+
+                            // keeping inorder in order
+                            pred.succ = succ;
+                            succ.pred = pred;
+                        }
+
+                        ret = pred.balanceTree();
 
                         break;
                     case 1:
