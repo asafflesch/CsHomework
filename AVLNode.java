@@ -85,32 +85,38 @@ public class AVLNode {
 			{
 				newLevelAdded = true;
 			}
-			// Put the new subtree back in the node
+			// Put the new node in the tree itseld
 	                if (compResult <= 0)
 			{
 				left = nodeToUse;
+				pred = nodeToUse;
+				AVLNode currNode = this;
+				// Update the successor up until we stop being in a right subtree.
+				while ((currNode != null) && (currNode.isRightChild()))
+				{
+					if (currNode.parent != null)
+					{
+						parent.succ = nodeToUse;
+					}
+					currNode = currNode.parent;
+				}
 			}
 			else
 			{
 				right = nodeToUse;
+				succ = nodeToUse;
+				AVLNode currNode = this;
+				// Update the predecessor up until we stop being in a right subtree.
+				while ((currNode != null) && (!currNode.isRightChild()))
+				{
+					if (currNode.parent != null)
+					{
+						parent.pred = nodeToUse;
+					}
+					currNode = currNode.parent;
+				}
 			}
                         nodeToUse.parent = this;
-
-                        // set pred and succ. this node is necessarily a leaf, since it
-                        // was just added
-                        if (nodeToUse.isRightChild())
-                        {
-                            nodeToUse.pred = this;
-                            nodeToUse.succ = succ;
-                            succ = nodeToUse;
-                        }
-                        else
-                        {
-                            nodeToUse.succ = this;
-                            nodeToUse.pred = pred;
-                            pred = nodeToUse;
-
-                        }
 		}
 		else
 		{
@@ -120,10 +126,10 @@ public class AVLNode {
 		if (newLevelAdded)
 		{
 			height = 1;
-			boolean needToChange = true;
+			boolean needToChangeHeight = true;
 			AVLNode currParent = parent;
 			// Run until we either hit the root or the change stops reverbating - i.e, the added node doesn't change the height of the level
-			while ((currParent != null) && (needToChange))
+			while ((currParent != null) && (needToChangeHeight))
 			{
 				int maxHeight = currParent.getMaxHeight() + 1;
 				if (maxHeight > currParent.height)
@@ -133,7 +139,7 @@ public class AVLNode {
 				}	
 				else
 				{
-					needToChange = false;
+					needToChangeHeight = false;
 				}
 			}
 		}
@@ -362,20 +368,28 @@ public class AVLNode {
                         {
                             AVLNode child = (left == null ? right : left);
 
-                            if (isRightChild())
-                                parent.right = child;
-                            else
-                                parent.left = child;
+			    if (parent != null)
+			    {
+                            	if (isRightChild())
+				{
+                                	parent.right = child;
+				}
+                            	else
+				{
+                               	 	parent.left = child;
+				}
+			    }
 
                         }
                         // if it has two children, switching places with predecessor.
                         else
                         {
-                            // switching pred's son to be parented by pred's parent
+                            // switching pred's son to be parented by pred's parent - it will have
+			    // either a left child if it itself is a right child or the other way around
                             if (pred.isRightChild())
                                 pred.parent.right = pred.left;
                             else
-                                parent.left = pred.left;
+                                pred.parent.left = pred.right;
 
                             // giving pred custody of this node's children
                             pred.right = right;
@@ -384,6 +398,19 @@ public class AVLNode {
                             // keeping inorder in order
                             pred.succ = succ;
                             succ.pred = pred;
+
+			    // replacing this node in the parent's eyes
+			    if (parent != null)
+			    {
+                            	if (isRightChild())
+				{
+                                	parent.right = pred;
+				}
+                            	else
+				{
+                               	 	parent.left = pred;
+				}
+			    }
                         }
 
                         ret = pred.balanceTree();
