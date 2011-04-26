@@ -89,7 +89,12 @@ public class AVLNode {
 	                if (compResult <= 0)
 			{
 				left = nodeToUse;
+
+                                // Setting inorder parameters
+                                nodeToUse.succ = this;
+                                nodeToUse.pred = pred;
 				pred = nodeToUse;
+                                
 				AVLNode currNode = this;
 				// Update the successor up until we stop being in a right subtree.
 				while ((currNode != null) && (currNode.isRightChild()))
@@ -104,7 +109,12 @@ public class AVLNode {
 			else
 			{
 				right = nodeToUse;
+
+                                // Setting inorder parameters
+                                nodeToUse.succ = succ;
+                                nodeToUse.pred = this;
 				succ = nodeToUse;
+
 				AVLNode currNode = this;
 				// Update the predecessor up until we stop being in a right subtree.
 				while ((currNode != null) && (!currNode.isRightChild()))
@@ -331,13 +341,17 @@ public class AVLNode {
 	private boolean isRightChild()
 	{
 		boolean isRight = false;
-		if (parent.right != null)
-		{
-			if (comp.compare(key, parent.right.getKey()) == 0)
-			{
-				isRight = true;
-			}
-		}
+
+                if (parent != null) {
+
+                    if (parent.right != null)
+                    {
+                            if (comp.compare(key, parent.right.getKey()) == 0)
+                            {
+                                    isRight = true;
+                            }
+                    }
+                }
 		return isRight;
 	}
 
@@ -388,7 +402,7 @@ public class AVLNode {
 			    // either a left child if it itself is a right child or the other way around
                             if (pred.isRightChild())
                                 pred.parent.right = pred.left;
-                            else
+                            else if (pred.parent != null)
                                 pred.parent.left = pred.right;
 
                             // giving pred custody of this node's children
@@ -424,6 +438,17 @@ public class AVLNode {
                         if (right != null)
                             ret = right.remove(key);
                         break;
+                }
+
+                // If key not found, returning current head
+                if (ret == null)
+                {
+                    AVLNode root = this;
+                    while (root.parent != null)
+                    {
+                        root = root.parent;
+                    }
+                    ret = root;
                 }
 
 
