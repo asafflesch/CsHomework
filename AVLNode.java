@@ -55,16 +55,8 @@ public class AVLNode {
 		this.size = 1;
 		this.height = 0;
 	}
-
-	/**
-	 * Adds the given data to the tree.
-	 *
-	 * @param key the key
-	 * @param data the data
-	 * @return the root of the tree after insertion and rotations
-	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
-	 */
-	public AVLNode add(Object key,Object data) {
+	private void recursiveAdd(Object key, Object data)
+	{
 		int compResult = comp.compare(key, this.key);
 		boolean newLevelAdded = false;
                 AVLNode nodeToUse = null;
@@ -121,38 +113,61 @@ public class AVLNode {
 		}
 		else
 		{
-			nodeToUse.add(key, data);
+			nodeToUse.recursiveAdd(key, data);
 		}
 
 		if (newLevelAdded)
 		{
 			height = 1;
-			boolean needToChangeHeight = true;
-			AVLNode currParent = parent;
-			// Run until we either hit the root or the change stops reverbating - i.e, the added node doesn't change the height of the level
-			while ((currParent != null) && (needToChangeHeight))
-			{
-				int maxHeight = currParent.getMaxHeight() + 1;
-				if (maxHeight > currParent.height)
-				{
-					currParent.height = maxHeight;
-					currParent = currParent.parent;
-				}	
-				else
-				{
-					needToChangeHeight = false;
-				}
-			}
+			reCalcHeight(parent);
 		}
 
-		// Adjusting the size - we added a node, so it goes up by 1.
-		size = size + 1;
-
-		return balanceTree();
+		// Adjusting the size 
+		balanceTree();
+	}
+	/**
+	 * Adds the given data to the tree.
+	 *
+	 * @param key the key
+	 * @param data the data
+	 * @return the root of the tree after insertion and rotations
+	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
+	 */
+	public AVLNode add(Object key,Object data) {
+		recursiveAdd(key, data);
+		AVLNode root = this;
+		while (root.parent != null)
+		{
+			root = root.parent;
+		}
+		return root;
 	}
 
-        private AVLNode balanceTree()
+	private void reCalcHeight(AVLNode startNode)
+	{
+		boolean needToChangeHeight = true;
+		AVLNode currParent = startNode;
+		// Run until we either hit the root or the change stops reverbating - i.e, the added node doesn't change the height of the level
+		while ((currParent != null) && (needToChangeHeight))
+		{
+			int oldHeight = currParent.height;
+			currParent.adjustHeight();
+			if (oldHeight != currParent.height)
+			{
+				currParent.height = oldHeight;
+				currParent = currParent.parent;
+			}	
+			else
+			{
+				needToChangeHeight = false;
+			}
+		}
+	}
+
+        private void balanceTree()
         {
+		adjustSize();
+		adjustHeight();
                 // Now we check if the new tree is still balanced
 		int balance = balanceFactor();
 
@@ -174,13 +189,6 @@ public class AVLNode {
 
 				// right rotation of subtree
 				rotateRight(right);
-				right.adjustHeight();
-				right.adjustSize();
-				if (right.right != null)
-				{
-					right.right.adjustSize();
-					right.right.adjustHeight();
-				}
 				// left rotation
 
 				rotateLeft(this);
@@ -196,14 +204,6 @@ public class AVLNode {
 				// left rotation of subtree
 				rotateLeft(left);
 
-				left.adjustHeight();
-				left.adjustSize();
-				if (left.left != null)
-				{
-					left.left.adjustHeight();
-					left.left.adjustSize();
-				}
-
 				// right rotation
 
 				rotateRight(this);
@@ -217,25 +217,11 @@ public class AVLNode {
 				rotateRight(this);
 			}
 		}
-		// Any changes require a re-balancing of the height and size of the subtree - which, at most, changed the level and size of two nodes
-		adjustSize();
-		adjustHeight();
+
 		if (parent != null)
 		{
-			parent.adjustSize();
 			parent.adjustHeight();
 		}
-
-		// Getting the tree root to return
-		AVLNode currParent = parent;
-		AVLNode root = this;
-		while (currParent != null)
-		{
-			root = currParent;
-			currParent = currParent.parent;
-		}
-
-		return root;
         }
 
 	private int balanceFactor()
@@ -275,6 +261,11 @@ public class AVLNode {
 				}
 			}
 			root.parent = newRoot;
+
+			root.adjustHeight();
+			root.adjustSize();
+			newRoot.adjustSize();
+			newRoot.adjustHeight();
 		}
 	}
 
@@ -304,6 +295,11 @@ public class AVLNode {
 				}
 			}
 			root.parent = newRoot;
+
+			root.adjustHeight();
+			root.adjustSize();
+			newRoot.adjustSize();
+			newRoot.adjustHeight();
 		}
 	}
 
@@ -346,16 +342,10 @@ public class AVLNode {
 		return isRight;
 	}
 
-	/**
-	 * Removes a Node which key is equal (by {@link Comparator}) to the given argument.
-	 *
-	 * @param key the key
-	 * @return the root after deletion and rotations
-	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
-	 */
-	public AVLNode remove(Object key) {
-                AVLNode ret = null;
-
+	private AVLNode removeRecursive(Object key)
+	{
+		AVLNode ret = null;
+		boolean foundKey = true;
                 switch (comp.compare(key, this.key))
                 {
                     // Removing this item
@@ -363,13 +353,20 @@ public class AVLNode {
                         // If item is a leaf
                         if (left == null && right == null)
                         {
-                            if (isRightChild())
+			    if (parent != null)
 			    {
-                                parent.right = null;
+                            	if (isRightChild())
+				    {
+        	                        parent.right = null;
+				    }
+                        	    else
+			    	    {
+	                                parent.left = null;
+				    }
 			    }
-                            else
+			    else
 			    {
-                                parent.left = null;
+				    ret = null;
 			    }
                         }
                         // if it has one child, moving it to the parent
@@ -389,18 +386,18 @@ public class AVLNode {
 				}
 			    }
 			    child.parent = parent;
-
                         }
                         // if it has two children, switching places with predecessor.
                         else
                         {
                             // switching pred's son to be parented by pred's parent - it will have
-			    // either a left child if it itself is a right child or the other way around
+			    // at most a left child
                             if (pred.isRightChild())
                                 pred.parent.right = pred.left;
-                            else if (pred.parent != null)
-                                pred.parent.left = pred.right;
+                            else 
+                                pred.parent.left = pred.left;
 
+			    AVLNode predParent = pred.parent;
                             // giving pred custody of this node's children
                             pred.right = right;
 			    if (right != null)
@@ -412,7 +409,6 @@ public class AVLNode {
 			    {
 				    left.parent = pred;
 			    }
-
 
 			    // replacing this node in the parent's eyes
 			    if (parent != null)
@@ -427,42 +423,85 @@ public class AVLNode {
 				}
 			    }
 			    pred.parent = parent;
-			    	
+			    if (comp.compare(predParent.key, key) != 0)
+			    {
+			    	while (comp.compare(pred.key, predParent.key) != 0)
+			    	{
+					predParent.balanceTree();
+					predParent = predParent.parent;
+			    	}
+			    }
+
                         }
 
                         // keeping inorder in order
 			if (pred != null)
 			{
                         	pred.succ = succ;
+				pred.balanceTree();
+				ret = pred;
 			}
+
 			if (succ != null)
 			{
                         	succ.pred = pred;
 			}
-                        ret = balanceTree();
 
                         break;
                     case -1:
                         if (left != null)
-                            ret = left.remove(key);
+			{
+                            ret = left.removeRecursive(key);
+			    if (ret == null)
+			    {
+				foundKey = false;
+			    }
+			}
+			else
+			{
+				foundKey = false;
+			}
                         break;
                     case 1:
                         if (right != null)
-                            ret = right.remove(key);
+			{
+                            ret = right.removeRecursive(key);
+			    if (ret == null)
+			    {
+				foundKey = false;
+			    }
+			}
+			else
+			{
+				foundKey = false;
+			}
                         break;
                 }
 
-                // If key not found, returning current head
-                if (ret == null)
-                {
-                    AVLNode root = this;
-                    while (root.parent != null)
-                    {
-                        root = root.parent;
-                    }
-                    ret = root;
-                }
-
+                // If we found the key in this level returning current head
+		if (foundKey)
+		{
+			balanceTree();
+		}
+		return ret;
+	}
+	/**
+	 * Removes a Node which key is equal (by {@link Comparator}) to the given argument.
+	 *
+	 * @param key the key
+	 * @return the root after deletion and rotations
+	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
+	 */
+	public AVLNode remove(Object key) {
+                AVLNode ret = removeRecursive(key);
+		if (ret == null)
+		{
+			ret = this;
+		}
+		while (ret.parent != null)
+		{
+			ret = ret.parent;
+		}
 
 		return ret;
 	}
@@ -483,7 +522,7 @@ public class AVLNode {
             AVLNode curr = findKthNode(k);
 
             // Adding elements to array
-            for (int i = k; i < h && curr != null; ++i)
+	    for (int i = k; i <= h && curr != null; ++i)
             {
                 ret.addLast(curr.data);
                 curr = curr.succ;
@@ -505,7 +544,7 @@ public class AVLNode {
 		int result = comp.compare(key, this.key);
 		if (result ==0)
 		{
-			return this;
+			return this.data;
 		}
 		else if (result < 0)
 		{
