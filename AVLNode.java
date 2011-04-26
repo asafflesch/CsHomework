@@ -109,6 +109,7 @@ public class AVLNode {
                                 nodeToUse.pred = this;
 				nodeToUse.succ = succ;
 				succ = nodeToUse;
+
 				if (nodeToUse.succ != null)
 				{
 					nodeToUse.succ.pred = nodeToUse;
@@ -363,9 +364,13 @@ public class AVLNode {
                         if (left == null && right == null)
                         {
                             if (isRightChild())
+			    {
                                 parent.right = null;
+			    }
                             else
+			    {
                                 parent.left = null;
+			    }
                         }
                         // if it has one child, moving it to the parent
                         else if (left == null || right == null)
@@ -408,12 +413,6 @@ public class AVLNode {
 				    left.parent = pred;
 			    }
 
-                            // keeping inorder in order
-                            pred.succ = succ;
-			    if (succ != null)
-			    {
-                            	succ.pred = pred;
-			    }
 
 			    // replacing this node in the parent's eyes
 			    if (parent != null)
@@ -431,6 +430,15 @@ public class AVLNode {
 			    	
                         }
 
+                        // keeping inorder in order
+			if (pred != null)
+			{
+                        	pred.succ = succ;
+			}
+			if (succ != null)
+			{
+                        	succ.pred = pred;
+			}
                         ret = balanceTree();
 
                         break;
