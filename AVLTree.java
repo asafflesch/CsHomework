@@ -109,7 +109,7 @@ public class AVLTree {
 		if (root == null)
 			return;
 		StringBuilder sb = new StringBuilder();
-		sb.append("digraph {\n");
+		sb.append("digraph Blahblah{\n");
 		sb.append("{rank = same ; \""+root.getKey()+"\"};\n");
 		root.inOrderToString(sb);
 		sb.append("}");

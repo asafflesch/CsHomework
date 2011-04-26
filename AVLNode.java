@@ -85,25 +85,20 @@ public class AVLNode {
 			{
 				newLevelAdded = true;
 			}
-			// Put the new node in the tree itseld
+			// Put the new node in the tree itself
 	                if (compResult <= 0)
 			{
 				left = nodeToUse;
 
                                 // Setting inorder parameters
                                 nodeToUse.succ = this;
-                                nodeToUse.pred = pred;
+				nodeToUse.pred = pred;
 				pred = nodeToUse;
                                 
 				AVLNode currNode = this;
-				// Update the successor up until we stop being in a right subtree.
-				while ((currNode != null) && (currNode.isRightChild()))
+				if (nodeToUse.pred != null)
 				{
-					if (currNode.parent != null)
-					{
-						parent.succ = nodeToUse;
-					}
-					currNode = currNode.parent;
+					nodeToUse.pred.succ = nodeToUse;
 				}
 			}
 			else
@@ -111,20 +106,15 @@ public class AVLNode {
 				right = nodeToUse;
 
                                 // Setting inorder parameters
-                                nodeToUse.succ = succ;
                                 nodeToUse.pred = this;
+				nodeToUse.succ = succ;
 				succ = nodeToUse;
-
-				AVLNode currNode = this;
-				// Update the predecessor up until we stop being in a right subtree.
-				while ((currNode != null) && (!currNode.isRightChild()))
+				if (nodeToUse.succ != null)
 				{
-					if (currNode.parent != null)
-					{
-						parent.pred = nodeToUse;
-					}
-					currNode = currNode.parent;
+					nodeToUse.succ.pred = nodeToUse;
 				}
+				AVLNode currNode = this;
+				
 			}
                         nodeToUse.parent = this;
 		}
@@ -393,6 +383,7 @@ public class AVLNode {
                                	 	parent.left = child;
 				}
 			    }
+			    child.parent = parent;
 
                         }
                         // if it has two children, switching places with predecessor.
@@ -407,11 +398,22 @@ public class AVLNode {
 
                             // giving pred custody of this node's children
                             pred.right = right;
+			    if (right != null)
+			    {
+				    right.parent = pred;
+			    }
                             pred.left = left;
+			    if (left != null)
+			    {
+				    left.parent = pred;
+			    }
 
                             // keeping inorder in order
                             pred.succ = succ;
-                            succ.pred = pred;
+			    if (succ != null)
+			    {
+                            	succ.pred = pred;
+			    }
 
 			    // replacing this node in the parent's eyes
 			    if (parent != null)
@@ -425,16 +427,18 @@ public class AVLNode {
                                	 	parent.left = pred;
 				}
 			    }
+			    pred.parent = parent;
+			    	
                         }
 
-                        ret = pred.balanceTree();
+                        ret = balanceTree();
 
                         break;
-                    case 1:
+                    case -1:
                         if (left != null)
                             ret = left.remove(key);
                         break;
-                    case -1:
+                    case 1:
                         if (right != null)
                             ret = right.remove(key);
                         break;
