@@ -12,6 +12,8 @@ public class KiPod{
 	 * Instantiates a new kiPod.
 	 */
 	public KiPod(){
+		playTree = new AVLTree(new StringComparator());
+		songTree = new AVLTree(new StringComparator());
 	}
 
 	/**

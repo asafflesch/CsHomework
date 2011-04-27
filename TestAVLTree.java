@@ -111,11 +111,11 @@ public class TestAVLTree {
 
 			if (delete){
 				for (int i=0;i<array.length;i=i+2){
+					tree.toDotFile("MightWork.dot");
 					tree.remove(array[i]);
 				}
 			}
 			AVLNode current = tree.getRoot();
-			tree.toDotFile("Tree" +  limit +  jump +  delete + ".dot");
 			//go back to start 
 			while (current.getPred() != null)
 				current = current.getPred();
@@ -204,7 +204,13 @@ public class TestAVLTree {
 
 			if (delete){
 				for (int i=0;i<array.length;i=i+2){
+					int oldSize = tree.size();
+					tree.toDotFile("Before.dot");
 					tree.remove(array[i]);
+					if (tree.size() != oldSize - 1)
+					{
+						tree.toDotFile("After.dot");
+					}
 				}
 			}
 			int size = tree.size();
@@ -219,8 +225,13 @@ public class TestAVLTree {
 				Object cur = it.next();
 				//System.out.println("Got " +cur);
 				if (((Integer)cur).intValue() != array[i]){
-					System.err.println("Problem in the order. got " + cur + " instead of " + array[i]);
-					return;
+					System.out.print(((Integer)cur).intValue() + "(B " + array[i] + ")->");
+					//System.err.println("Problem in the order. got " + cur + " instead of " + array[i]);
+				//	return;
+				}
+				else
+				{
+					System.out.print(((Integer)cur).intValue() + "->");
 				}
 				i= i + adv;
 				

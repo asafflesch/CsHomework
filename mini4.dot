@@ -1,0 +1,38 @@
+digraph Blahblah{
+{rank = same ; "3"};
+nulll1 [shape=point];
+1 -> nulll1;
+1[label="1,s:1,h:0"];
+1 -> 2[style=dashed];
+nullr1 [shape=point];
+1 -> nullr1;
+2 -> 1;
+2[label="2,s:2,h:1"];
+2 -> 3[style=dashed];
+nullr2 [shape=point];
+2 -> nullr2;
+3 -> 2;
+3[label="3,s:7,h:3"];
+nulll5 [shape=point];
+5 -> nulll5;
+5[label="5,s:1,h:0"];
+5 -> 7[style=dashed];
+nullr5 [shape=point];
+5 -> nullr5;
+7 -> 5;
+7[label="7,s:4,h:2"];
+7 -> 3[style=dashed];
+nulll14 [shape=point];
+14 -> nulll14;
+14[label="14,s:1,h:0"];
+14 -> 15[style=dashed];
+nullr14 [shape=point];
+14 -> nullr14;
+15 -> 14;
+15[label="15,s:2,h:1"];
+15 -> 7[style=dashed];
+nullr15 [shape=point];
+15 -> nullr15;
+7 -> 15;
+3 -> 7;
+}

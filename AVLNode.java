@@ -301,7 +301,10 @@ public class AVLNode {
 				}
 			}
 			root.parent = newRoot;
-
+			if ((root.right == root.left) && (root.right != null))
+			{
+				System.out.println("WhutR");
+			}
 			root.adjustHeight();
 			root.adjustSize();
 			newRoot.adjustSize();
@@ -348,10 +351,14 @@ public class AVLNode {
 		return isRight;
 	}
 
+	private static int numOfKids=-2;
+
 	private AVLNode removeRecursive(Object key)
 	{
 		AVLNode ret = this;
-                switch (comp.compare(key, this.key))
+		AVLNode newTree = null;
+		int compareResult = comp.compare(key, this.key);
+                switch (compareResult)
                 {
                     // Removing this item
                     case 0:
@@ -361,11 +368,13 @@ public class AVLNode {
                         	// If item is a leaf
 	                        if (left == null && right == null)
         	                {
+					numOfKids=0;
 				    	ret = null;
                         	}
 				else
 				{
 					ret = (left != null) ? left : right;
+					numOfKids=1;
 					ret.parent = parent;
 				}
                         	// keeping inorder in order
@@ -383,28 +392,52 @@ public class AVLNode {
                         {
                             // if it has two children, switching places with predecessor.
 			    AVLNode oldPred = pred;
-			    AVLNode newTree = this.left.removeRecursive(pred.key);
-                            oldPred.left = newTree;
+			    AVLNode oldLeft = null;
+			    // newTree = this.left.removeRecursive(pred.key);
+			    if (comp.compare(pred.key,left.key) != 0)
+			    {
+				    oldPred.parent.right = pred.left;
+				    oldPred.left = left;
+				    if (left != null)
+				    {
+				 	  left.parent = oldPred;
+				    }
+				    oldPred.parent = oldPred.parent.balanceTree();
+			    }
+
+			    numOfKids=2;
+			    //if (newTree != null)
+			    //{
+			//	    newTree.parent = oldPred;
+			  //  }
+
+			    if (parent != null)
+			    {
+				    if (isRightChild())
+				    {
+					    parent.right = oldPred;
+				    }
+				    else
+				    {
+					    parent.left = oldPred;
+				    }
+			    }
 			    oldPred.succ = succ;
 			    if (succ != null)
 			    {
 				    succ.pred = oldPred;
 			    }
-			    if ((oldPred.pred != null) && (oldPred.pred.succ != null))
+			    if (oldPred.pred != null)
 			    {
 				    oldPred.pred.succ = oldPred;
 			    }
-			    if (newTree != null)
-			    {
-				    newTree.parent = oldPred;
-			    }
+
 			    oldPred.right = right;
 			    if (right != null)
 			    {
 				    right.parent = oldPred;
 			    }
 			    oldPred.parent = parent;
-
 			    ret = oldPred;
                         }
                         break;
@@ -417,6 +450,7 @@ public class AVLNode {
                     case 1:
                         if (right != null)
 			{
+
                             right = right.removeRecursive(key);
 			}
                         break;
@@ -436,12 +470,19 @@ public class AVLNode {
 	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
 	 */
 	public AVLNode remove(Object key) {
+		int oldSize = size;
                 AVLNode ret = removeRecursive(key);
 		if (ret != null)
 		{
 			while (ret.parent != null)
 			{
 				ret = ret.parent;
+				ret = ret.balanceTree();
+			}
+			if ((ret.size - oldSize) != -1)
+			{
+	//			System.out.println("Problem key " + key + " has " + numOfKids + " children. Problem size is: " + ret.size + ", expected " + (oldSize - 1));
+				numOfKids = -2;
 			}
 		}
 		return ret;
@@ -620,7 +661,14 @@ public class AVLNode {
 	 */
 	public void inOrderToString(StringBuilder sb){
 		if (this.left != null){	
-			this.left.inOrderToString(sb);
+			try
+			{
+				this.left.inOrderToString(sb);
+			}
+			catch(StackOverflowError err)
+			{
+				System.out.println("Error in trying to write left subtree of " + this.key + " " + this.left.key);
+			}
 			sb.append(this.key + " -> " + left.key + ";\n");
 		}else
 		{
@@ -633,7 +681,14 @@ public class AVLNode {
 			sb.append(this.key + " -> " + parent.key + "[style=dashed];\n");
 
 		if (this.right != null){
-			this.right.inOrderToString(sb);
+			try
+			{
+				this.right.inOrderToString(sb);
+			}
+			catch(StackOverflowError err)
+			{
+				System.out.println("Error in trying to write right subtree of " + this.key);
+			}
 			sb.append(this.key + " -> " + right.key + ";\n");
 		}else
 		{
