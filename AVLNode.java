@@ -152,6 +152,7 @@ public class AVLNode {
 		return root;
 	}
 
+	// Recalculates startNode's height and recalculates and changes the heights of it's ancestors until no further change is needed 
 	private void reCalcHeight(AVLNode startNode)
 	{
 		boolean needToChangeHeight = true;
@@ -173,6 +174,10 @@ public class AVLNode {
 		}
 	}
 
+	// Checks the tree rooted in this node for balance and rotates appropriately. 
+	// If we're doing things right - and we are - balancing will never require
+	// more two rotations. Returns the new root of the tree(which is, at most, two
+	// levels down)
         private AVLNode balanceTree()
         {
 		AVLNode ret = this;
@@ -232,6 +237,7 @@ public class AVLNode {
 		return ret;
         }
 
+	// Calculates the balance of the tree rooted in this node
 	private int balanceFactor()
 	{
 		int leftFactor = -1;	
@@ -243,6 +249,7 @@ public class AVLNode {
 		return leftFactor - rightFactor;
 	}
 
+	// Rotates the tree rooted in 'root' to the right - i.e, makes root the right child of it's left child
 	private void rotateRight(AVLNode root)
 	{
 		if (root.left != null)
@@ -277,6 +284,7 @@ public class AVLNode {
 		}
 	}
 
+	// Rotates the tree rooted in 'root' to the left - i.e, makes root the left child of it's right child
 	private void rotateLeft(AVLNode root)
 	{
 		if (root.right != null)
@@ -310,12 +318,16 @@ public class AVLNode {
 		}
 	}
 
+	// The following two functions are essentially free actions that can only correct a node - therefore they may be overused
+
+	// Recalculates the size of the tree rooted in this node
 	private void adjustSize()
 	{
 		int leftSize = (left != null) ? left.size : 0;
 		int rightSize = (right != null) ? right.size : 0;
 		size = leftSize + rightSize + 1;
 	}
+	// Recalculates the size of the tree rooted in this node
 	private void adjustHeight()
 	{
 		int leftHeight = (left != null) ? left.height : 0;
@@ -328,10 +340,12 @@ public class AVLNode {
 		}
 	}
 
+	// Returns if the node is a right child or not - onus is on the caller to make sure
+	// it's not calling it with a null parent. If it is called as such, it is entirely appropriate
+	// for it to throw an exception
 	private boolean isRightChild()
 	{
 		boolean isRight = false;
-
 
                 if (parent.right != null)
                 {
@@ -343,12 +357,12 @@ public class AVLNode {
 		return isRight;
 	}
 
-	private static int numOfKids=-2;
 
+	// Recursively removes a node from the tree and returns the new root of it, balanced
 	private AVLNode removeRecursive(Object key)
 	{
+		// Default value to return is the unchanged node
 		AVLNode ret = this;
-		AVLNode newTree = null;
 		int compareResult = comp.compare(key, this.key);
                 switch (compareResult)
                 {
@@ -360,10 +374,12 @@ public class AVLNode {
                         	// If item is a leaf
 	                        if (left == null && right == null)
         	                {
+					// The new root of the tree is null - there's nothing beneath the deleted node
 				    	ret = null;
                         	}
 				else
 				{
+					// The new root of the tree is it's single child
 					ret = (left != null) ? left : right;
 					ret.parent = parent;
 				}
@@ -380,17 +396,22 @@ public class AVLNode {
                         }
                         else
                         {
-                            // if it has two children, switching places with predecessor.
+                            // The new root of the tree is it's predecessor
 			    AVLNode oldPred = pred;
-			    AVLNode oldLeft = null;
-			    newTree = this.left.removeRecursive(pred.key);
+			    // Guaranteed to be a simple removal - predecessor by definition has no right subtree
+			    AVLNode newTree = this.left.removeRecursive(pred.key);
 
+
+			    // Hooking up the new left child
 			    oldPred.left = newTree;
 			    if (newTree != null)
 			    {
 				    newTree.parent = oldPred;
 			    }
 
+			    // Hooking up the parent to point to it's new child. This is neccesary because we balance
+			    // the tree on every recursive call, so the tree already has to be properly hooked up, instead
+			    // of waiting for the hooking up to occur one call up.
 			    if (parent != null)
 			    {
 				    if (isRightChild())
@@ -402,6 +423,8 @@ public class AVLNode {
 					    parent.left = oldPred;
 				    }
 			    }
+
+			    // Setting the inorder parameters
 			    oldPred.succ = succ;
 			    if (succ != null)
 			    {
@@ -412,11 +435,14 @@ public class AVLNode {
 				    oldPred.pred.succ = oldPred;
 			    }
 
+			    // Hooking up the right child
 			    oldPred.right = right;
 			    if (right != null)
 			    {
 				    right.parent = oldPred;
 			    }
+
+			    // Hooking up the new tree to it's parent
 			    oldPred.parent = parent;
 			    ret = oldPred;
                         }
@@ -424,13 +450,14 @@ public class AVLNode {
                     case -1:
                         if (left != null)
 			{
+			    // The key is smaller than the current node, look left
                             left = left.removeRecursive(key);
 			}
                         break;
                     case 1:
                         if (right != null)
 			{
-
+			    // The key is larger than the current node, look right
                             right = right.removeRecursive(key);
 			}
                         break;
@@ -438,6 +465,8 @@ public class AVLNode {
 
 		if (ret != null)
 		{
+			// We balance the tree on every call - balancing costs very little, and it's
+			// best to balance as close to the source of the disruption - node removal - as possible
 			ret = ret.balanceTree();
 		}
 		return ret;
@@ -450,19 +479,15 @@ public class AVLNode {
 	 * @author <b>Asaf Flescher, Dana Katz-Buchstav</b>
 	 */
 	public AVLNode remove(Object key) {
-		int oldSize = size;
                 AVLNode ret = removeRecursive(key);
+		// If there's anything to return - i.e, we didn't delete the sole remaining node - then we
+		// balance each parent before returning the new root
 		if (ret != null)
 		{
 			while (ret.parent != null)
 			{
 				ret = ret.parent;
 				ret = ret.balanceTree();
-			}
-			if ((ret.size - oldSize) != -1)
-			{
-	//			System.out.println("Problem key " + key + " has " + numOfKids + " children. Problem size is: " + ret.size + ", expected " + (oldSize - 1));
-				numOfKids = -2;
 			}
 		}
 		return ret;
@@ -483,7 +508,7 @@ public class AVLNode {
             // Get Kth element
             AVLNode curr = findKthNode(k);
 
-            // Adding elements to array
+            // Adding elements from k to h to list
 	    for (int i = k; i <= h && curr != null; ++i)
             {
                 ret.addLast(curr.data);
@@ -504,6 +529,8 @@ public class AVLNode {
 	 */
 	public Object find(Object key) {
 		int result = comp.compare(key, this.key);
+		// Standard BST find
+
 		if (result ==0)
 		{
 			return this.data;
@@ -558,7 +585,7 @@ public class AVLNode {
             // Checking the left subtree
             if (left == null)
             {
-                // If there are no elements to the left, this is the
+                // If there are no elements to the left, then the root is the
                 // first element in this tree
                 if (k == 1)
                 {
