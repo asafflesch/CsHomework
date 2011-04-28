@@ -51,18 +51,15 @@ public class KiPod{
 	 * @param playlist the playlist
 	 */
 	public void removePlaylist(Playlist playlist){
-		/* Find all the songs it features in,
-                 remove from them*/
-
-                 LinkedList songlist = playlist.getKthtillHthSongs
-                         (1, playlist.size());
-
+		// Get all the songs this playlist features, and remove the playlist from each one of them
+                 LinkedList songlist = playlist.getKthtillHthSongs(1, playlist.size());
                  Iterator it = songlist.iterator();
                  while (it.hasNext()){
-                     removeSongFromPlaylist((Song)(it.next()), playlist);
+			 Song currSong = (Song)it.next();
+	                 removeSongFromPlaylist(currSong, playlist);
                  }
 
-                /* Remove from data structure*/
+                // Now we can remove the playlist from our internal playlist list
                  playTree.remove(playlist.getName());		
 	}
 
@@ -73,6 +70,7 @@ public class KiPod{
 	 * @param playlist the playlist
 	 */
 	public void removeSongFromPlaylist(Song song, Playlist playlist){
+		// Remove each from the other. Why did Kiv Jobs order this architecture?
 		song.remove(playlist);
                 playlist.remove(song);
 	}
@@ -83,14 +81,13 @@ public class KiPod{
 	 * @param song the song
 	 */
 	public void removeSong(Song song){
-		/* Find all the playlists it features in,
-                 remove from them*/
+		 // Find all the playlists song features in, and  remove it from them
                  Iterator it = song.getPlaylists().iterator();
                  while (it.hasNext()){
                      removeSongFromPlaylist(song, (Playlist)(it.next()));
                  }
 
-                /* Remove from data structure*/
+                /// Now we can remove the song from our internal song list
                  songTree.remove(song.getTitle());
 	}
 	

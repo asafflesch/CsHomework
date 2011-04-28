@@ -4,6 +4,9 @@ import java.util.NoSuchElementException;
 
 
 public class LinkedList implements Iterable{
+	// Head and tail here are the same if we have a single item, and point to each other
+	// if there are two items - i.e, there are no 'dummy' nodes. It's all internal, so 
+	// we can always make sure of the integrity of both
 	private Link head;
 	private Link tail;
 	/**
@@ -23,10 +26,6 @@ public class LinkedList implements Iterable{
 	public void addFirst(Object data){
 		if (head == null)
 		{
-			if (tail != null)
-			{
-				throw new RuntimeException("Sanity check failed - if head is null, tail should be too");
-			}
 			// Empty list
 			head = new Link(data, null, null);
 			tail = head;
@@ -63,6 +62,7 @@ public class LinkedList implements Iterable{
                 {
 			throw new NoSuchElementException();
                 }
+		// If the head's next is null, the new list is just empty
 		if (head.getNext() != null) 
 		{
 			head = head.getNext();
@@ -84,10 +84,6 @@ public class LinkedList implements Iterable{
 	public void addLast(Object data){
 		if (tail == null)
 		{
-			if (head != null)
-			{
-				throw new RuntimeException("Sanity check failed - if tail is null, head should be too");
-			}
 			// Empty list
 			tail = new Link(data, null, null);
 			head = tail;
@@ -123,7 +119,7 @@ public class LinkedList implements Iterable{
                 {
 			throw new NoSuchElementException();
                 }
-               
+               	// If tail's prev is null, the new list is just empty
 		if (tail.getPrev() != null)
 		{
 			tail = tail.getPrev();
@@ -165,8 +161,10 @@ public class LinkedList implements Iterable{
 			}
 			else
 			{
+				// Hooking up the prev and next nodes to 'skip' this node which is being deleted
 				Link nextNode = curr.getNext();
 				curr.getPrev().setNext(nextNode);
+				nextNode.setPrev(curr.getPrev());
 			}
                         found = true;
                     }
@@ -205,11 +203,7 @@ public class LinkedList implements Iterable{
 	 * @return true, if is empty
 	 */
 	public boolean isEmpty(){
-		// A list is empty if the head is null
-		if (((head == null) && (tail != null)) || ((head != null) &&  (tail == null)))
-		{
-			throw new RuntimeException("Sanity check failed - head and tail must be either null or not-null together");
-		}
+		// A list is empty if the head is null(or the tail is null, they're functionally the same for that purpose)
 		return (head == null);
 	}
 

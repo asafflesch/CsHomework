@@ -111,7 +111,6 @@ public class TestAVLTree {
 
 			if (delete){
 				for (int i=0;i<array.length;i=i+2){
-					tree.toDotFile("MightWork.dot");
 					tree.remove(array[i]);
 				}
 			}
@@ -128,10 +127,8 @@ public class TestAVLTree {
 					return;
 				}
 				i= i + adv;
-				System.err.print(current.getKey().toString() + "->");
 				current = current.getSucc();
 			}
-			System.err.println();
 			
 
 		}catch (Throwable ex){
@@ -228,10 +225,6 @@ public class TestAVLTree {
 					System.out.print(((Integer)cur).intValue() + "(B " + array[i] + ")->");
 					//System.err.println("Problem in the order. got " + cur + " instead of " + array[i]);
 				//	return;
-				}
-				else
-				{
-					System.out.print(((Integer)cur).intValue() + "->");
 				}
 				i= i + adv;
 				

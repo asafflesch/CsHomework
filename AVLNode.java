@@ -55,6 +55,8 @@ public class AVLNode {
 		this.size = 1;
 		this.height = 0;
 	}
+
+	// Recursively adds an object to the tree
 	private AVLNode recursiveAdd(Object key, Object data)
 	{
 		int compResult = comp.compare(key, this.key);
@@ -68,15 +70,17 @@ public class AVLNode {
 		{
 			nodeToUse = right;
 		}
-		// If the tree is empty
+		// This is where the node actually gets added
 		if (nodeToUse == null)
 		{
 			nodeToUse = new AVLNode(key, data, this.comp, this);	
+
 			// If left and right are null, then we're adding a new 'level' to the tree and need to update the height of everything in the tree
 			if ((left == null) && (right == null))
 			{
 				newLevelAdded = true;
 			}
+
 			// Put the new node in the tree itself
 	                if (compResult <= 0)
 			{
@@ -87,7 +91,6 @@ public class AVLNode {
 				nodeToUse.pred = pred;
 				pred = nodeToUse;
                                 
-				AVLNode currNode = this;
 				if (nodeToUse.pred != null)
 				{
 					nodeToUse.pred.succ = nodeToUse;
@@ -106,7 +109,6 @@ public class AVLNode {
 				{
 					nodeToUse.succ.pred = nodeToUse;
 				}
-				AVLNode currNode = this;
 				
 			}
                         nodeToUse.parent = this;
@@ -176,7 +178,7 @@ public class AVLNode {
 		AVLNode ret = this;
 		adjustSize();
 		adjustHeight();
-                // Now we check if the new tree is still balanced
+                //Check if the tree is still balanced
 		int balance = balanceFactor();
 
 		// Four cases for balancing
@@ -301,10 +303,6 @@ public class AVLNode {
 				}
 			}
 			root.parent = newRoot;
-			if ((root.right == root.left) && (root.right != null))
-			{
-				System.out.println("WhutR");
-			}
 			root.adjustHeight();
 			root.adjustSize();
 			newRoot.adjustSize();
@@ -312,12 +310,6 @@ public class AVLNode {
 		}
 	}
 
-	private int getMaxHeight()
-	{
-		int leftHeight = (left != null) ? left.height : 0;
-		int rightHeight = (right != null) ? right.height : 0;
-		return Math.max(leftHeight, rightHeight);
-	}
 	private void adjustSize()
 	{
 		int leftSize = (left != null) ? left.size : 0;
@@ -326,7 +318,9 @@ public class AVLNode {
 	}
 	private void adjustHeight()
 	{
-		height = getMaxHeight();
+		int leftHeight = (left != null) ? left.height : 0;
+		int rightHeight = (right != null) ? right.height : 0;
+		height = Math.max(leftHeight, rightHeight);
 		// Adding the level this node gets for having ANY children at all
 		if ((left != null) || (right != null))
 		{
@@ -338,15 +332,13 @@ public class AVLNode {
 	{
 		boolean isRight = false;
 
-                if (parent != null) {
 
-                    if (parent.right != null)
-                    {
-                            if (comp.compare(key, parent.right.getKey()) == 0)
-                            {
-                                    isRight = true;
-                            }
-                    }
+                if (parent.right != null)
+                {
+                        if (comp.compare(key, parent.right.getKey()) == 0)
+                        {
+                                isRight = true;
+                        }
                 }
 		return isRight;
 	}
@@ -368,13 +360,11 @@ public class AVLNode {
                         	// If item is a leaf
 	                        if (left == null && right == null)
         	                {
-					numOfKids=0;
 				    	ret = null;
                         	}
 				else
 				{
 					ret = (left != null) ? left : right;
-					numOfKids=1;
 					ret.parent = parent;
 				}
                         	// keeping inorder in order
@@ -393,23 +383,13 @@ public class AVLNode {
                             // if it has two children, switching places with predecessor.
 			    AVLNode oldPred = pred;
 			    AVLNode oldLeft = null;
-			    // newTree = this.left.removeRecursive(pred.key);
-			    if (comp.compare(pred.key,left.key) != 0)
-			    {
-				    oldPred.parent.right = pred.left;
-				    oldPred.left = left;
-				    if (left != null)
-				    {
-				 	  left.parent = oldPred;
-				    }
-				    oldPred.parent = oldPred.parent.balanceTree();
-			    }
+			    newTree = this.left.removeRecursive(pred.key);
 
-			    numOfKids=2;
-			    //if (newTree != null)
-			    //{
-			//	    newTree.parent = oldPred;
-			  //  }
+			    oldPred.left = newTree;
+			    if (newTree != null)
+			    {
+				    newTree.parent = oldPred;
+			    }
 
 			    if (parent != null)
 			    {
